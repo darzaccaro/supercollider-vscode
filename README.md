@@ -15,9 +15,29 @@ A comprehensive VS Code extension for SuperCollider development with language se
 
 ## Installation
 
-### From VSIX (Local Development)
+### From Marketplace
+
+**Cursor Marketplace** (Recommended - No Microsoft account needed!)
+- Open Cursor → Extensions (Cmd+Shift+X) → Search "SuperCollider"
+
+**Open VSX Registry** (Works with Cursor, VSCodium, Theia)
+- Automatically used by compatible editors
+
+**VS Code Marketplace** (Coming when Microsoft account issues resolved)
+- Will be available in VS Code Extensions
+
+### From VSIX (Current - Local Development)
+
+For VS Code:
 1. Download or build the `.vsix` file
 2. Open VS Code
+3. Go to Extensions view (`Cmd+Shift+X` / `Ctrl+Shift+X`)
+4. Click `...` menu → `Install from VSIX...`
+5. Select the `.vsix` file
+
+For Cursor:
+1. Download the `.vsix` file
+2. Open Cursor
 3. Go to Extensions view (`Cmd+Shift+X` / `Ctrl+Shift+X`)
 4. Click `...` menu → `Install from VSIX...`
 5. Select the `.vsix` file

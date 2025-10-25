@@ -5,6 +5,26 @@
   "version": "0.1.0",
   "publisher": "supercollider",
   "license": "MIT",
+  "author": {
+    "name": "Dar Zaccaro"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/sc-ext.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/sc-ext/issues"
+  },
+  "homepage": "https://github.com/yourusername/sc-ext#readme",
+  "keywords": [
+    "supercollider",
+    "audio",
+    "sound",
+    "synthesis",
+    "music",
+    "live coding",
+    "sclang"
+  ],
   "engines": {
     "vscode": "^1.75.0"
   },
