@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as child_process from 'child_process';
 import { OSCClient } from './oscClient';
 import { SuperColliderLanguageClient } from './languageClient';
 
@@ -230,6 +233,155 @@ export class SuperColliderCommands {
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to stop sounds: ${err}`);
         }
+    }
+
+    async openHelp(): Promise<void> {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showWarningMessage('No active editor');
+            return;
+        }
+
+        // Get word under cursor
+        const position = editor.selection.active;
+        const wordRange = editor.document.getWordRangeAtPosition(position);
+        
+        if (!wordRange) {
+            vscode.window.showWarningMessage('No symbol under cursor');
+            return;
+        }
+
+        const word = editor.document.getText(wordRange);
+        
+        if (!word.trim()) {
+            vscode.window.showWarningMessage('No symbol under cursor');
+            return;
+        }
+
+        await this.openHelpForSymbol(word);
+    }
+
+    private async openHelpForSymbol(symbol: string): Promise<void> {
+        try {
+            // Try to get help file path from sclang
+            const config = vscode.workspace.getConfiguration('supercollider');
+            const sclangPath = config.get<string>('sclangPath', 'sclang');
+
+            // Create a temporary sclang script to find the help file
+            const scCode = `
+                var class, helpPath;
+                class = "${symbol}".asSymbol.asClass;
+                if (class.notNil) {
+                    helpPath = class.help.path;
+                    if (helpPath.notNil) {
+                        helpPath.postln;
+                    } {
+                        "NOHELP".postln;
+                    };
+                } {
+                    // Try to find help file directly
+                    helpPath = Help.findHelpFile("${symbol}");
+                    if (helpPath.notNil) {
+                        helpPath.postln;
+                    } {
+                        "NOHELP".postln;
+                    };
+                };
+                0.exit;
+            `;
+
+            // Execute sclang to get help path
+            const result = await this.executeSclangCode(sclangPath, scCode);
+            
+            if (result.includes('NOHELP') || !result.trim()) {
+                // Try opening in browser as fallback
+                this.openHelpInBrowser(symbol);
+                return;
+            }
+
+            const helpPath = result.trim().split('\n').pop()?.trim();
+            
+            if (helpPath && fs.existsSync(helpPath)) {
+                // Open help file
+                await this.openHelpFile(helpPath);
+            } else {
+                // Fallback to browser
+                this.openHelpInBrowser(symbol);
+            }
+        } catch (err) {
+            console.error('Error opening help:', err);
+            // Fallback to browser
+            this.openHelpInBrowser(symbol);
+        }
+    }
+
+    private executeSclangCode(sclangPath: string, code: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const proc = child_process.spawn(sclangPath, ['-e', code]);
+            let output = '';
+            let errorOutput = '';
+
+            proc.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+
+            proc.stderr.on('data', (data) => {
+                errorOutput += data.toString();
+            });
+
+            proc.on('close', (code) => {
+                if (code === 0 || output.length > 0) {
+                    resolve(output);
+                } else {
+                    reject(new Error(errorOutput || 'sclang failed'));
+                }
+            });
+
+            proc.on('error', (err) => {
+                reject(err);
+            });
+
+            // Timeout after 5 seconds
+            setTimeout(() => {
+                proc.kill();
+                reject(new Error('sclang timeout'));
+            }, 5000);
+        });
+    }
+
+    private async openHelpFile(helpPath: string): Promise<void> {
+        const ext = path.extname(helpPath).toLowerCase();
+        
+        if (ext === '.html' || ext === '.htm') {
+            // Open HTML in browser
+            const uri = vscode.Uri.file(helpPath);
+            await vscode.env.openExternal(uri);
+            vscode.window.showInformationMessage(`Opening help for ${path.basename(helpPath, ext)}`);
+        } else if (ext === '.scd' || ext === '.sc') {
+            // Open SC file in editor
+            const document = await vscode.workspace.openTextDocument(helpPath);
+            await vscode.window.showTextDocument(document, {
+                preview: true,
+                viewColumn: vscode.ViewColumn.Beside
+            });
+        } else {
+            // Try to open as text
+            const document = await vscode.workspace.openTextDocument(helpPath);
+            await vscode.window.showTextDocument(document, {
+                preview: true,
+                viewColumn: vscode.ViewColumn.Beside
+            });
+        }
+    }
+
+    private openHelpInBrowser(symbol: string): void {
+        // Fallback: Open SuperCollider documentation website
+        const docUrl = `https://doc.sccode.org/Classes/${symbol}.html`;
+        vscode.env.openExternal(vscode.Uri.parse(docUrl));
+        vscode.window.showInformationMessage(
+            `Opening online help for "${symbol}". ` +
+            'For local help, ensure SuperCollider is properly installed.'
+        );
     }
 
     private flashRange(editor: vscode.TextEditor, range: vscode.Range): void {

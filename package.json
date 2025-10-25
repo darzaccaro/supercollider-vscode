@@ -95,6 +95,10 @@
       {
         "command": "supercollider.connectOSC",
         "title": "SuperCollider: Connect to sclang"
+      },
+      {
+        "command": "supercollider.openHelp",
+        "title": "SuperCollider: Open Help for Symbol"
       }
     ],
     "keybindings": [
@@ -115,6 +119,12 @@
         "key": "ctrl+.",
         "mac": "cmd+.",
         "when": "editorLangId == supercollider"
+      },
+      {
+        "command": "supercollider.openHelp",
+        "key": "ctrl+d",
+        "mac": "cmd+d",
+        "when": "editorTextFocus && editorLangId == supercollider"
       }
     ]
   },

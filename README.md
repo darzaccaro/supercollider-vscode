@@ -90,6 +90,7 @@ All commands are accessible via Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
 | `SuperCollider: Evaluate Selection` | Evaluate selected code or current line | `Cmd+Enter` / `Ctrl+Enter` |
 | `SuperCollider: Evaluate File` | Evaluate entire file | `Cmd+Shift+Enter` / `Ctrl+Shift+Enter` |
 | `SuperCollider: Stop All Sounds` | Emergency stop all sounds | `Cmd+.` / `Ctrl+.` |
+| `SuperCollider: Open Help for Symbol` | Open help documentation for symbol at cursor | `Cmd+D` / `Ctrl+D` |
 
 ## Usage
 
@@ -113,6 +114,20 @@ All commands are accessible via Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
 )
 // The entire block above will be evaluated as one unit
 ```
+
+### Getting Help
+
+Place your cursor on any SuperCollider class, method, or symbol and press `Cmd+D` (Mac) or `Ctrl+D` (Windows/Linux) to open help documentation.
+
+**Example:**
+```supercollider
+SinOsc.ar(440)  // Place cursor on "SinOsc" and press Cmd+D
+```
+
+The extension will:
+1. **Try local help first** - Opens the installed SuperCollider help file (HTML or .scd)
+2. **Fallback to online** - If local help isn't found, opens https://doc.sccode.org
+3. **Smart detection** - Works for classes, methods, and topics
 
 ### Server Control
 
