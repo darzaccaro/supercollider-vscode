@@ -1,0 +1,152 @@
+{
+  "name": "supercollider-vscode",
+  "displayName": "SuperCollider",
+  "description": "SuperCollider language support with LSP and server control",
+  "version": "0.1.0",
+  "publisher": "supercollider",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:supercollider"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "supercollider",
+        "aliases": [
+          "SuperCollider",
+          "sclang"
+        ],
+        "extensions": [
+          ".sc",
+          ".scd"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "supercollider",
+        "scopeName": "source.supercollider",
+        "path": "./syntaxes/supercollider.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "SuperCollider",
+      "properties": {
+        "supercollider.sclangPath": {
+          "type": "string",
+          "default": "sclang",
+          "description": "Path to the sclang executable"
+        },
+        "supercollider.oscHost": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "OSC host address for sclang communication"
+        },
+        "supercollider.oscPort": {
+          "type": "number",
+          "default": 57120,
+          "description": "OSC port for sclang communication"
+        },
+        "supercollider.useLanguageServer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Language Server Protocol features"
+        },
+        "supercollider.languageServerPort": {
+          "type": "number",
+          "default": 57121,
+          "description": "Port for the SuperCollider Language Server"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "supercollider.startLanguageServer",
+        "title": "SuperCollider: Start Language Server"
+      },
+      {
+        "command": "supercollider.bootServer",
+        "title": "SuperCollider: Boot Server"
+      },
+      {
+        "command": "supercollider.quitServer",
+        "title": "SuperCollider: Quit Server"
+      },
+      {
+        "command": "supercollider.evalSelection",
+        "title": "SuperCollider: Evaluate Selection"
+      },
+      {
+        "command": "supercollider.evalFile",
+        "title": "SuperCollider: Evaluate File"
+      },
+      {
+        "command": "supercollider.stopSound",
+        "title": "SuperCollider: Stop All Sounds"
+      },
+      {
+        "command": "supercollider.connectOSC",
+        "title": "SuperCollider: Connect to sclang"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "supercollider.evalSelection",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "editorTextFocus && editorLangId == supercollider"
+      },
+      {
+        "command": "supercollider.evalFile",
+        "key": "ctrl+shift+enter",
+        "mac": "cmd+shift+enter",
+        "when": "editorTextFocus && editorLangId == supercollider"
+      },
+      {
+        "command": "supercollider.stopSound",
+        "key": "ctrl+.",
+        "mac": "cmd+.",
+        "when": "editorLangId == supercollider"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "test:unit": "npm run compile && node ./out/test/runTest.js -- --grep 'Unit Tests'",
+    "test:integration": "npm run compile && node ./out/test/runTest.js -- --grep 'Integration Tests'",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.0",
+    "@types/sinon": "^10.0.20",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "@vscode/test-electron": "^2.3.0",
+    "eslint": "^8.36.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "sinon": "^15.2.0",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "osc": "^2.4.4",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5"
+  }
+}
+
