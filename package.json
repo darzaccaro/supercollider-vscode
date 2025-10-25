@@ -4,6 +4,7 @@
   "description": "SuperCollider language support with LSP and server control",
   "version": "0.1.0",
   "publisher": "supercollider",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
   },
