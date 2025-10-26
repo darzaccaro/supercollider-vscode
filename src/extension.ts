@@ -104,13 +104,25 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Auto-start language server if enabled
+    // Auto-connect to existing scide instance via OSC
+    try {
+        await oscClient.connect();
+        statusBarItem.text = 'SC ●';
+        statusBarItem.tooltip = 'SuperCollider (Connected)';
+        console.log('Auto-connected to SuperCollider via OSC');
+    } catch (err) {
+        console.log('SuperCollider not running yet (will connect on first evaluation)');
+        statusBarItem.text = 'SC ○';
+        statusBarItem.tooltip = 'SuperCollider (Not connected - start scide first)';
+    }
+
+    // Auto-start language server if enabled (optional feature)
+    // Disabled by default as it requires LanguageServer Quark
     if (config.useLanguageServer) {
-        try {
-            await languageClient.start(context);
-        } catch (err) {
-            console.log('Could not auto-start language server:', err);
-        }
+        // Try to start LSP but don't block or show errors if it fails
+        languageClient.start(context).catch(() => {
+            // Silently fail - LSP is optional
+        });
     }
 }
 
@@ -120,6 +132,12 @@ export async function deactivate() {
     }
     
     if (languageClient) {
+        // Send quit command to sclang before stopping
+        const sclangProcess = languageClient.getSclangProcess();
+        if (sclangProcess) {
+            languageClient.sendToSclang('0.exit;');
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
         await languageClient.stop();
     }
 }

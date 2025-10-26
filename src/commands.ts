@@ -71,13 +71,30 @@ export class SuperColliderCommands {
     }
 
     async bootServer(): Promise<void> {
-        if (!this.oscClient.isConnected()) {
-            await this.connectOSC();
-        }
-
         try {
-            await this.oscClient.bootServer();
-            vscode.window.showInformationMessage('Booting SuperCollider server...');
+            // Check if sclang is running
+            const sclangProcess = this.languageClient.getSclangProcess();
+            
+            if (!sclangProcess) {
+                // Start sclang first (which auto-boots server)
+                vscode.window.showInformationMessage('Starting sclang and booting server...');
+                await this.languageClient.startSclang();
+            } else {
+                // Sclang already running, just boot server
+                this.languageClient.sendToSclang('Server.default.boot;');
+                vscode.window.showInformationMessage('Booting SuperCollider server...');
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+            
+            // Try to connect OSC
+            if (!this.oscClient.isConnected()) {
+                try {
+                    await this.connectOSC();
+                } catch (err) {
+                    console.log('OSC not available, using direct sclang communication');
+                }
+            }
+            
             this.updateStatusBar();
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to boot server: ${err}`);
@@ -85,14 +102,22 @@ export class SuperColliderCommands {
     }
 
     async quitServer(): Promise<void> {
-        if (!this.oscClient.isConnected()) {
-            vscode.window.showWarningMessage('Not connected to sclang');
-            return;
-        }
-
         try {
-            await this.oscClient.quitServer();
-            vscode.window.showInformationMessage('Quitting SuperCollider server...');
+            const sclangProcess = this.languageClient.getSclangProcess();
+            
+            if (sclangProcess) {
+                // Send quit command to sclang
+                this.languageClient.sendToSclang('Server.default.quit;');
+                vscode.window.showInformationMessage('Quitting SuperCollider server...');
+            } else if (this.oscClient.isConnected()) {
+                // Fallback to OSC if available
+                await this.oscClient.quitServer();
+                vscode.window.showInformationMessage('Quitting SuperCollider server...');
+            } else {
+                vscode.window.showWarningMessage('No SuperCollider server running');
+                return;
+            }
+            
             this.updateStatusBar();
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to quit server: ${err}`);
@@ -104,10 +129,6 @@ export class SuperColliderCommands {
         if (!editor) {
             vscode.window.showWarningMessage('No active editor');
             return;
-        }
-
-        if (!this.oscClient.isConnected()) {
-            await this.connectOSC();
         }
 
         try {
@@ -135,7 +156,22 @@ export class SuperColliderCommands {
             }
 
             if (code.trim()) {
+                // Try OSC first (connect to existing scide)
+                if (!this.oscClient.isConnected()) {
+                    try {
+                        await this.oscClient.connect();
+                        this.updateStatusBar();
+                    } catch (err) {
+                        vscode.window.showErrorMessage(
+                            'Not connected to SuperCollider. Please start scide first.'
+                        );
+                        return;
+                    }
+                }
+                
+                // Send code via OSC
                 await this.oscClient.sendEval(code);
+                
                 // Flash the selection briefly
                 this.flashRange(editor, rangeToFlash);
             }

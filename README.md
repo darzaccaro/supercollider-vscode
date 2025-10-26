@@ -2,6 +2,8 @@
 
 A comprehensive VS Code extension for SuperCollider development with language server support, syntax highlighting, and integrated server control.
 
+![SuperCollider VS Code Extension Screenshot](screenshot.png)
+
 ## Features
 
 - 🎨 **Syntax Highlighting** - Full SuperCollider syntax highlighting for `.sc` and `.scd` files
@@ -15,17 +17,6 @@ A comprehensive VS Code extension for SuperCollider development with language se
 
 ## Installation
 
-### From Marketplace
-
-**Cursor Marketplace** (Recommended - No Microsoft account needed!)
-- Open Cursor → Extensions (Cmd+Shift+X) → Search "SuperCollider"
-
-**Open VSX Registry** (Works with Cursor, VSCodium, Theia)
-- Automatically used by compatible editors
-
-**VS Code Marketplace** (Coming when Microsoft account issues resolved)
-- Will be available in VS Code Extensions
-
 ### From VSIX (Current - Local Development)
 
 For VS Code:
@@ -38,14 +29,13 @@ For VS Code:
 For Cursor:
 1. Download the `.vsix` file
 2. Open Cursor
-3. Go to Extensions view (`Cmd+Shift+X` / `Ctrl+Shift+X`)
-4. Click `...` menu → `Install from VSIX...`
-5. Select the `.vsix` file
+3. Cmd + P → `Install from VSIX...`
+4. Select the `.vsix` file
 
 ### From Source
 ```bash
 git clone <repository-url>
-cd sc-ext
+cd supercollider-vscode
 npm install
 npm run compile
 ```
@@ -68,10 +58,18 @@ Then press F5 in VS Code to launch the extension in debug mode.
 ## Quick Start
 
 1. **Install SuperCollider** if you haven't already
-2. **Open a SuperCollider file** (`.sc` or `.scd`)
-3. **Start sclang** in a terminal or use the extension
-4. **Connect to sclang**: Click the status bar item or run command `SuperCollider: Connect to sclang`
-5. **Evaluate code**: Select code and press `Cmd+Enter` (Mac) or `Ctrl+Enter` (Windows/Linux)
+2. **Open scide** and evaluate the following code:
+```
+(
+thisProcess.openUDPPort(57120);
+OSCdef(\cursorExtension, { |msg|
+    var code = msg[1].asString;
+    code.interpret;
+}, '/interpret');
+)
+```
+3. **Open a SuperCollider file in VSCode/Cursor** (`.sc` or `.scd`)
+4. **Start coding!** - Press `Cmd+Enter` (Mac) or `Ctrl+Enter` (Windows/Linux) to evaluate
 
 ## Configuration
 
@@ -151,9 +149,13 @@ The extension will:
 
 ### Server Control
 
-1. **Boot Server**: Run `SuperCollider: Boot Server` from Command Palette
-2. **Quit Server**: Run `SuperCollider: Quit Server` from Command Palette
+The extension automatically starts sclang when needed. You can also manually control:
+
+1. **Boot Server**: Run `SuperCollider: Boot Server` from Command Palette (auto-starts sclang)
+2. **Quit Server**: Run `SuperCollider: Quit Server` from Command Palette  
 3. **Emergency Stop**: Press `Cmd+.` (Mac) or `Ctrl+.` (Windows/Linux) to stop all sounds
+
+**No need to manually start SuperCollider first!** The extension handles it automatically.
 
 ### Status Bar
 
@@ -321,8 +323,3 @@ Created for the SuperCollider community.
 
 - **Documentation**: See docs in this repository
 - **Issues**: Report bugs on GitHub
-- **Community**: Join SuperCollider community forums
-
----
-
-**Happy Live Coding! 🎵**

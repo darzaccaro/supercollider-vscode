@@ -1,161 +1,144 @@
 # Quick Start Guide
 
-## Installation Complete! ✅
+## How It Works
 
-Your SuperCollider VSCode extension is ready to use.
+This extension connects to your **existing SuperCollider IDE** (scide) via OSC. It doesn't start its own sclang process - it just sends code to the scide you already have running.
 
-## Quick Test (In VSCode)
+## Setup (One Time)
 
-1. **Open this project in VSCode**
-   ```bash
-   code /Users/dar/repos/music
-   ```
+### 1. Start SuperCollider IDE (scide)
 
-2. **Launch Extension Development Host**
-   - Press `F5` in VSCode
-   - A new VSCode window will open with the extension loaded
+Open scide as you normally would.
 
-3. **Test Syntax Highlighting**
-   - In the new window, open `example.scd`
-   - You should see syntax highlighting for SuperCollider code
+### 2. Enable OSC in scide
 
-4. **Test Commands** (requires SuperCollider installed)
-   - Start sclang in a terminal: `sclang`
-   - In the sclang terminal, enable OSC:
-     ```supercollider
-     thisProcess.openUDPPort(57120);
-     OSCFunc({ |msg| msg[1].asString.interpret; }, '/interpret');
-     ```
-   - In VSCode, click "SC ○" in the status bar to connect
-   - Open `example.scd`
-   - Select a line and press `Cmd+Enter` (Mac) or `Ctrl+Enter` (Win/Linux)
-   - The code should execute in sclang!
+In scide, evaluate this once:
 
-## Development Commands
-
-```bash
-# Watch for changes (auto-compile)
-npm run watch
-
-# Compile once
-npm run compile
-
-# Run tests
-npm test
-
-# Run linter
-npm run lint
+```supercollider
+// Enable OSC communication (default port 57120)
+thisProcess.openUDPPort(57120);
 ```
 
-## Testing
+**Or** add this to your startup file (`~/Library/Application Support/SuperCollider/startup.scd` on Mac):
 
-### Unit Tests
-Run without SuperCollider:
-```bash
-npm test
+```supercollider
+// Auto-enable OSC on startup
+thisProcess.openUDPPort(57120);
 ```
 
-### Integration Tests
-Require SuperCollider installed. Tests will automatically:
-- Spawn sclang process
-- Send OSC commands
-- Verify responses
-- Clean up processes
+### 3. Done!
 
-## Architecture Summary
+The extension will auto-connect when you open Cursor/VS Code.
 
+## Usage
+
+### 1. Open a `.sc` or `.scd` file
+
+### 2. Evaluate code
+
+- **`Cmd+Enter`** (Mac) / **`Ctrl+Enter`** (Windows/Linux) - Evaluate selection or current line
+- **If no selection**: Evaluates the entire parenthesized block `(...)` if cursor is inside one
+- **If selection**: Evaluates selected code
+
+```supercollider
+// Evaluate this line
+"Hello World".postln;
+
+// Or evaluate this entire block (place cursor anywhere inside)
+(
+    var synth = {
+        SinOsc.ar(440, 0, 0.2) ! 2
+    }.play;
+    
+    synth;
+)
 ```
-┌──────────────────┐
-│   VSCode Window  │
-│                  │
-│  ┌────────────┐  │
-│  │ Extension  │  │      OSC          ┌─────────┐
-│  │  (Client)  │──┼──────────────────►│ sclang  │
-│  │            │  │   /interpret      │         │
-│  │  LSP       │  │                   │         │
-│  │  Client    │──┼──────────────────►│   LSP   │
-│  └────────────┘  │    TCP :57121     │  Quark  │
-└──────────────────┘                   └─────────┘
-```
 
-## Key Files
+### 3. Stop all sounds
 
-- **`src/extension.ts`** - Main entry point, registers commands
-- **`src/oscClient.ts`** - Handles OSC communication with sclang
-- **`src/languageClient.ts`** - LSP integration
-- **`src/commands.ts`** - Command implementations
-- **`syntaxes/supercollider.tmLanguage.json`** - Syntax highlighting rules
+- **`Cmd+.`** (Mac) / **`Ctrl+.`** (Windows/Linux)
 
-## Features Implemented
+### 4. Open help
 
-✅ **Syntax Highlighting**
-- Keywords, classes, UGens, symbols, comments, strings
+- Place cursor on a class/method
+- **`Cmd+D`** (Mac) / **`Ctrl+D`** (Windows/Linux)
+- Opens local help or falls back to online docs
 
-✅ **LSP Features** (requires LanguageServer Quark)
-- Autocomplete
-- Hover information
-- Diagnostics
-- Go-to-definition
-- Find references
+## Status Bar
 
-✅ **Server Control**
-- Boot/quit server
-- Evaluate code (selection or file)
-- Stop all sounds
+Look at the bottom right corner:
 
-✅ **Status Bar**
-- Connection indicator
-- Click to connect
+- **`SC ●`** - Connected to scide
+- **`SC ○`** - Not connected (start scide first!)
 
-✅ **Keybindings**
-- `Cmd+Enter` / `Ctrl+Enter`: Evaluate selection
-- `Cmd+Shift+Enter` / `Ctrl+Shift+Enter`: Evaluate file
-- `Cmd+.` / `Ctrl+.`: Stop all sounds
+Click the status to manually connect.
 
-✅ **Testing**
-- Unit tests with mocking
-- Integration tests with sclang spawning
-- CI/CD with GitHub Actions
+## Commands
 
-## Next Steps
+Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`):
 
-1. **Test the extension** in VSCode Extension Development Host
-2. **Run the test suite** to verify everything works
-3. **Customize** configuration in `.vscode/settings.json`
-4. **Package for distribution**:
-   ```bash
-   npm install -g @vscode/vsce
-   vsce package
-   # Creates supercollider-vscode-0.1.0.vsix
-   ```
+- **SuperCollider: Connect OSC** - Manual connection
+- **SuperCollider: Boot Server** - Boot audio server (`s.boot`)
+- **SuperCollider: Quit Server** - Quit audio server (`s.quit`)
+- **SuperCollider: Stop All Sounds** - Emergency stop (`Cmd+.`)
+- **SuperCollider: Open Help** - Help for symbol at cursor (`Cmd+D`)
+
+## Where Output Goes
+
+All output (postln, errors, etc.) appears in **scide's post window**, not in Cursor!
+
+This is by design - use scide for monitoring output, Cursor for editing code.
+
+## Workflow Example
+
+1. **Start scide** (once)
+2. **In scide**: `thisProcess.openUDPPort(57120);`
+3. **In scide**: `s.boot;` (boot the audio server)
+4. **In Cursor**: Open `.sc` file
+5. **In Cursor**: Write and evaluate code with `Cmd+Enter`
+6. **In scide**: See output in post window
+7. **In scide**: Hear audio
 
 ## Troubleshooting
 
-### "Command not found: sclang"
-Install SuperCollider from https://supercollider.github.io/
+### "Not connected to SuperCollider"
 
-### "OSC connection failed"
-Make sure sclang is running with OSC enabled:
+**Fix**: Start scide and make sure OSC is enabled:
 ```supercollider
 thisProcess.openUDPPort(57120);
-OSCFunc({ |msg| msg[1].asString.interpret; }, '/interpret');
 ```
 
-### "Language Server not found"
-Install the LanguageServer Quark in SuperCollider:
+### Code doesn't evaluate
+
+**Check**:
+1. Is scide running?
+2. Did you enable OSC in scide?
+3. Is the port correct? (default: 57120)
+
+### Wrong port?
+
+Change in settings:
+1. `Cmd+,` → Search "SuperCollider"
+2. Change "OSC Port" (default: 57120)
+3. In scide: `thisProcess.openUDPPort(YOUR_PORT);`
+
+### No audio
+
+The server boots in scide, not the extension. In scide:
 ```supercollider
-Quarks.install("LanguageServer");
-LanguageServer.start(57121);
+s.boot;
 ```
 
-## Resources
+## Advanced: Using Without scide
 
-- [README.md](README.md) - Full documentation
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Development guidelines
-- [PROJECT_STATUS.md](PROJECT_STATUS.md) - Implementation status
-- [SuperCollider Docs](https://docs.supercollider.online/)
+If you don't want to use scide at all, the extension can start its own sclang process, but this is **not recommended** as you won't see output easily.
 
----
+## Philosophy
 
-**Happy coding with SuperCollider in VSCode!** 🎵
+This extension is designed to work **with** scide, not replace it:
+
+- **Cursor/VS Code**: Better text editing, multiple cursors, git integration, modern IDE features
+- **scide**: Post window, help browser, server monitoring, meters, scope
+
+Best of both worlds! 🎵
 

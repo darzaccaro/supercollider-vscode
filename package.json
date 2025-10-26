@@ -78,8 +78,8 @@
         },
         "supercollider.useLanguageServer": {
           "type": "boolean",
-          "default": true,
-          "description": "Enable Language Server Protocol features"
+          "default": false,
+          "description": "Enable Language Server Protocol features (requires LanguageServer Quark)"
         },
         "supercollider.languageServerPort": {
           "type": "number",
@@ -180,4 +180,3 @@
     "vscode-languageserver-protocol": "^3.17.5"
   }
 }
-
