@@ -1,34 +1,20 @@
 # SuperCollider VS Code Extension
 
-A comprehensive VS Code extension for SuperCollider development with language server support, syntax highlighting, and integrated server control.
+A VS Code extension for SuperCollider that has syntax highlighting, code evaluation commands (CMD + Enter), sends messages to a running scide, opens docs (CMD + D), etc...
+
+Note: A lot of these docs are AI generated since I built this in a weekend (sorry).
 
 ![SuperCollider VS Code Extension Screenshot](screenshot.png)
 
-## Features
-
-- 🎨 **Syntax Highlighting** - Full SuperCollider syntax highlighting for `.sc` and `.scd` files
-- 🔌 **OSC Integration** - Communicate with sclang via OSC protocol
-- 🚀 **Server Control** - Boot, quit, and manage SuperCollider server
-- 🎵 **Code Evaluation** - Evaluate selections, lines, or entire files
-- 🛑 **Emergency Stop** - Quick stop all sounds
-- 🔧 **Language Server Protocol** - Code completion, hover info, and more (when LSP quark is installed)
-- 📊 **Status Bar** - Real-time connection status indicator
-- ⌨️ **Keyboard Shortcuts** - Familiar key bindings for SuperCollider users
-
 ## Installation
 
+### Marketplace
+I got locked out of my Microsoft account, so I can't submit this to the market place 🤷
+
 ### From VSIX (Current - Local Development)
-
-For VS Code:
-1. Download or build the `.vsix` file
-2. Open VS Code
-3. Go to Extensions view (`Cmd+Shift+X` / `Ctrl+Shift+X`)
-4. Click `...` menu → `Install from VSIX...`
-5. Select the `.vsix` file
-
-For Cursor:
+For VS Code, Cursor, et al:
 1. Download the `.vsix` file
-2. Open Cursor
+2. Open VS Code
 3. Cmd + P → `Install from VSIX...`
 4. Select the `.vsix` file
 
@@ -59,7 +45,7 @@ Then press F5 in VS Code to launch the extension in debug mode.
 
 1. **Install SuperCollider** if you haven't already
 2. **Open scide** and evaluate the following code:
-```
+```supercollider
 (
 thisProcess.openUDPPort(57120);
 OSCdef(\cursorExtension, { |msg|
