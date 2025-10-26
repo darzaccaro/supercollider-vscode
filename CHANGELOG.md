@@ -1,8 +1,6 @@
 # Change Log
 
-All notable changes to the "SuperCollider" extension will be documented in this file.
-
-## [0.1.0] - 2025-01-XX
+## [0.1.0] - 2025-10-26
 
 ### Initial Release
 
@@ -40,15 +38,6 @@ All notable changes to the "SuperCollider" extension will be documented in this 
 - 🔧 Configurable LSP port
 - 🔧 Auto-start option for language server
 
-**Developer Experience**
-- 🧪 80+ automated tests (unit and integration)
-- 🧪 Comprehensive test coverage (~85%)
-- 🧪 CI/CD ready with GitHub Actions
-- 🧪 Cross-platform test runner (Python)
-- 📖 Extensive documentation
-- 📖 Contributing guidelines
-- 📖 Clear keyboard shortcuts
-
 #### Commands
 
 - `SuperCollider: Connect to sclang` - Connect to SuperCollider via OSC
@@ -77,22 +66,11 @@ All notable changes to the "SuperCollider" extension will be documented in this 
 - `supercollider.useLanguageServer` - Enable LSP (default: true)
 - `supercollider.languageServerPort` - LSP port (default: 57121)
 
-#### Technical Details
-
-- Built with TypeScript
-- Uses Mocha + Sinon for testing
-- TextMate grammar for syntax highlighting
-- OSC library for sclang communication
-- VS Code Language Client for LSP
-- Comprehensive error handling
-- Smart parenthesis matching algorithm
-- Process spawning for help queries
-
 #### Platform Support
 
-- ✅ macOS (tested on macOS 14+)
-- ✅ Linux (tested on Ubuntu)
-- ✅ Windows (tested on Windows 10/11)
+- ✅ macOS (tested on macOS 15.6.1)
+- ✅ Linux (untested)
+- ✅ Windows (untested)
 
 #### Requirements
 
@@ -104,19 +82,17 @@ All notable changes to the "SuperCollider" extension will be documented in this 
 
 - Language Server features require SuperCollider LanguageServer Quark
 - Local help requires SuperCollider installation
-- OSC communication requires sclang to be running
+- OSC communication requires sclang/scide to be running
 
 #### Credits
 
 - Created by Dar Zaccaro
-- Inspired by scide, scvim, and Emacs scel
-- Built for the SuperCollider community
 
 ---
 
 ## Future Releases
 
-### Planned Features
+### Unplanned Features That Would Be Cool
 
 - [ ] Snippet library for common patterns
 - [ ] Enhanced LSP integration
